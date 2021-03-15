@@ -10,7 +10,8 @@ def new_game():
     frame_down.grid(row = 1, column = 0, sticky = "nsew")
     t = 0
     buttons = []
-    empty = 15
+    global empty 
+    empty = 0
     for i in range(4):
         frame_down.columnconfigure(i, weight = 1, minsize = 10)
         frame_down.rowconfigure(i, weight = 1, minsize = 10)
@@ -22,41 +23,48 @@ def new_game():
                 relief = tk.RAISED,
                 borderwidth = 5,
                 text = f"{lst[t]}",
-                command = lambda x=lst[t]: move(x, lst, buttons, empty)
+                command = lambda x=lst[t]: move(x, lst, buttons)
             )
             buttons.append(frame)
             t += 1
-            frame.grid(row = t//4, column = t%4, sticky="nsew")
+            frame.grid(row = t//4+1, column = t%4, sticky="nsew")
 
 
 def fin():
     exit(0)
 
 
-def move(x, lst, buttons, empty_cell):
-    print(x)
+def move(x, lst, buttons):
+    global empty
     cur_ind = lst.index(x)
     start_row = buttons[cur_ind].grid_info()['row']
     start_column = buttons[cur_ind].grid_info()['column']
-    new_row = empty_cell//4+1
-    new_column = empty_cell%4
-    print(start_row, start_column)
+    new_row = empty//4+1
+    new_column = empty%4
     if ((abs(new_row-start_row) == 1) and (new_column == start_column)) or ((abs(new_column-start_column) == 1) and (new_row == start_row)):
         buttons[cur_ind].grid(row=new_row, column=new_column, sticky="SEWN")
-        empty = (start_row-1)*4 + start_column    
+        empty = (start_row-1)*4 + start_column
+        if check(buttons):
+            messagebox.showinfo(title="Win message", message="You win!")
+            new_game()
 
 
-def check(lst):
-    good_lst = list(range(1,17))
-    if (good_lst == lst):
-        print("You win!")
+def check(buttons):
+    global empty
+    if empty != 15:
+        return False
+    for i in range(15):
+        cur_row = buttons[i].grid_info()["row"]
+        cur_column = buttons[i].grid_info()["column"]
+        if ((cur_row - 1) * 4 + cur_column) != i:
+            return False
+    return True
 
 
 #Drawing window and field
 window = tk.Tk()
 
 frame_up = tk.Frame(master = window)
-# frame_down = tk.Frame(master = window)
 frame_new = tk.Button(
     master = frame_up,
     relief = tk.RAISED,
