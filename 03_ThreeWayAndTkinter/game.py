@@ -11,7 +11,7 @@ def new_game():
     t = 0
     buttons = []
     global empty 
-    empty = 0
+    empty = 15
     for i in range(4):
         frame_down.columnconfigure(i, weight = 1, minsize = 1)
         frame_down.rowconfigure(i+1, weight = 1, minsize = 1)
@@ -30,8 +30,8 @@ def new_game():
                 command = lambda x=lst[t]: move(x, lst, buttons)
             )
             buttons.append(frame)
-            t += 1
             frame.grid(row = t//4+1, column = t%4, sticky="nsew")
+            t += 1
 
 
 def fin():
@@ -55,14 +55,13 @@ def move(x, lst, buttons):
 
 def check(buttons):
     global empty
-    if empty != 15:
-        return False
+    result = 0
     for i in range(15):
-        cur_row = buttons[i].grid_info()["row"]
-        cur_column = buttons[i].grid_info()["column"]
-        if ((cur_row - 1) * 4 + cur_column) != i:
-            return False
-    return True
+        cell_position = (buttons[i].grid_info()['row'] - 1) * 4 + buttons[i].grid_info()['column']
+        result += int(str(cell_position+1) == buttons[i].cget('text'))
+    if result == 15: 
+        messagebox.showinfo('', 'You win!')
+        new_game()
 
 
 #Drawing window and field
