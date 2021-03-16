@@ -10,6 +10,8 @@ def new_game():
     frame_down.grid(row = 1, column = 0, sticky = "nsew")
     t = 0
     buttons = []
+    array = [0]*16
+
     global empty 
     empty = 15
     for i in range(4):
@@ -31,8 +33,27 @@ def new_game():
             )
             buttons.append(frame)
             frame.grid(row = t//4+1, column = t%4, sticky="nsew")
+            array[(t//4)*4 + t%4] = lst[t]
+            
             t += 1
+    if not (correctable(array)):
+        new_game()
 
+
+def correctable(array):
+    inv = 0
+    for i in range(16):
+        if array[i]:
+            for j in range(i):
+                if array[j] > array[i]:
+                    inv += 1
+    for i in range(16):
+        if array[i] == 0:
+            inv += 1 + i//4
+    if inv % 2 == 0:
+        return True
+    else:
+        return False
 
 def fin():
     exit(0)
